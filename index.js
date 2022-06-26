@@ -48,16 +48,25 @@ client.once("ready", () =>{
 })
 
 //Interpret and respond to slash commands
-client.on('interactionCreate', async (interaction) => {
+client.once('interactionCreate', async (interaction) => {
     console.log(interaction)
-    if (!interaction.isCommand()) return;
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        if (error) console.error(error);
-        await interaction.reply({ content: `Une erreur s'est produite lors de l'exécution de cette commande !`, ephemeral: true });
+    if (interaction.name === "ping") {
+        // send an initial reply
+        await interaction.reply("Pong");
+
+        // send a followup
+        const messageId = await interaction.reply({
+            content: "Follow up message",
+            embeds: [new MessageEmbed().setDescription("Follow up test")],
+        });
+    
+        setTimeout(() => {
+            // delete initial reply
+            interaction.delete();
+    
+            // edit 1st followup
+            interaction.edit("Edited follow up message", messageId);
+        }, 5000);
     }
 });
 
